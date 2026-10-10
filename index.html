@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forest Quest</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f8f2;
+        color: #1f2937;
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+      }
+      .game {
+        width: min(680px, 92vw);
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        padding: 1.5rem;
+      }
+      h1 {
+        margin-top: 0;
+      }
+      #prompt {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+      #choices {
+        display: grid;
+        gap: 0.5rem;
+      }
+      button {
+        border: 1px solid #d1d5db;
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 0.75rem;
+        text-align: left;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #eef2ff;
+      }
+      .restart {
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="game">
+      <h1>Forest Quest</h1>
+      <p id="prompt"></p>
+      <div id="choices"></div>
+    </main>
+    <script>
+      const game = {
+        start: {
+          prompt: "You enter a forest and find two paths. Which way do you go?",
+          choices: [
+            { key: "l", label: "Left path", next: "leftPath" },
+            { key: "r", label: "Right path", next: "rightPath" },
+          ],
+        },
+        leftPath: {
+          prompt: "You meet a friendly wizard. What do you do?",
+          choices: [
+            { key: "t", label: "Talk to the wizard", next: "leftWin" },
+            { key: "w", label: "Walk away quietly", next: "leftLose" },
+          ],
+        },
+        rightPath: {
+          prompt: "You find a river blocking your way. What do you do?",
+          choices: [
+            { key: "s", label: "Swim across", next: "rightLose" },
+            { key: "b", label: "Build a raft", next: "rightWin" },
+          ],
+        },
+        leftWin: {
+          prompt: "The wizard gives you a map. You find treasure and win!",
+          choices: [],
+        },
+        leftLose: { prompt: "You get lost in the trees. Game over.", choices: [] },
+        rightWin: { prompt: "Your raft works! You cross safely and win!", choices: [] },
+        rightLose: { prompt: "The current is too strong. Game over.", choices: [] },
+      };
+
+      const promptEl = document.getElementById("prompt");
+      const choicesEl = document.getElementById("choices");
+
+      function render(nodeName) {
+        const node = game[nodeName];
+        promptEl.textContent = node.prompt;
+        choicesEl.innerHTML = "";
+
+        if (!node.choices.length) {
+          const restart = document.createElement("button");
+          restart.className = "restart";
+          restart.textContent = "Play again";
+          restart.addEventListener("click", () => render("start"));
+          choicesEl.appendChild(restart);
+          return;
+        }
+
+        node.choices.forEach((choice) => {
+          const button = document.createElement("button");
+          button.textContent = `${choice.key}) ${choice.label}`;
+          button.addEventListener("click", () => render(choice.next));
+          choicesEl.appendChild(button);
+        });
+      }
+
+      render("start");
+    </script>
+  </body>
+</html>
